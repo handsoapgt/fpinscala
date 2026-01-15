@@ -8,17 +8,35 @@ enum Tree[+A]:
     case Leaf(_) => 1
     case Branch(l, r) => 1 + l.size + r.size
 
-  def depth: Int = ???
+  def depth: Int = this match
+    case Leaf(_) => 0
+    case Branch(l, r) => 1 + l.depth.max(r.depth)
 
-  def map[B](f: A => B): Tree[B] = ???
+  def map[B](f: A => B): Tree[B] = this match
+    case Leaf(i) => Leaf(f(i))
+    case Branch(l, r) => Branch(l.map(f), r.map(f))
 
-  def fold[B](f: A => B, g: (B,B) => B): B = ???
+  def fold[B](f: A => B, g: (B,B) => B): B = this match
+    case Leaf(i) => f(i)
+    case Branch(l, r) => g(l.fold(f, g), r.fold(f, g))
   
-  def sizeViaFold: Int = ???
+  def sizeViaFold: Int =
+    fold(
+      _ => 1,
+      (x, y) => 1 + x + y
+    )
   
-  def depthViaFold: Int = ???
+  def depthViaFold: Int =
+    fold(
+      _ => 0,
+      (x, y) => 1 + x.max(y)
+    )
   
-  def mapViaFold[B](f: A => B): Tree[B] = ???
+  def mapViaFold[B](f: A => B): Tree[B] =
+    fold(
+      x => Leaf(f(x)),
+      (x, y) => Branch(x, y)
+    )
 
 object Tree:
 
@@ -28,6 +46,8 @@ object Tree:
 
   extension (t: Tree[Int]) def firstPositive: Int = ???
 
-  extension (t: Tree[Int]) def maximum: Int = ???
+  extension (t: Tree[Int]) def maximum: Int = t match
+    case Leaf(i) => i
+    case Branch(l, r) => l.maximum.max(r.maximum)
 
   extension (t: Tree[Int]) def maximumViaFold: Int = ???
