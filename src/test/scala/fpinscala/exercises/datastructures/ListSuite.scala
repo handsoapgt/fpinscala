@@ -116,12 +116,10 @@ class ListSuite extends PropSuite:
         case (a, b) => a + b
       assertEquals(List.addPairwise(list1, list2), scalaListToList(expectedSList))
 
-  /*
   test("List.zipWith")(genIntList ** genIntList):
     case list1 ** list2 =>
       val expectedSList = listToScalaList(list1).zip(listToScalaList(list2)).map(_ * _)
       assertEquals(List.zipWith(list1, list2, _ * _), scalaListToList(expectedSList))
-   */
 
   test("List.hasSubsequence")(genIntList ** genSmallNum):
     case list ** n =>
@@ -130,6 +128,11 @@ class ListSuite extends PropSuite:
       assert(List.hasSubsequence(list, Try(List.init(list)).getOrElse(Nil)))
       assert(List.hasSubsequence(list, Try(List.tail(list)).getOrElse(Nil)))
       assert(List.hasSubsequence(list, List.drop(list, n)))
+
+  test("List.hasPrefix")(Gen.unit(())): _ =>
+    assert(List.hasPrefix(Cons(1, Cons(2, Cons(3, Nil))), Cons(1, Nil)))
+    assert(List.hasPrefix(Cons(1, Cons(2, Cons(3, Nil))), Cons(1, Cons(2, Nil))))
+    assert(List.hasPrefix(Cons(1, Cons(2, Cons(3, Nil))), Cons(1, Cons(2, Cons(3, Nil)))))
 
   test("random lists - List.hasSubsequence")(genIntList ** genIntList):
     case list1 ** list2 =>
